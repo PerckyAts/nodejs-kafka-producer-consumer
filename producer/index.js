@@ -1,40 +1,35 @@
+
+import express from 'express';
+import bodyParser from 'body-parser';
 import Kafka from 'node-rdkafka';
-import eventType from '../eventType.js';
-import readline from 'readline';
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-
+import eventType from '../eventType.js'; // Adjust the path based on your project structure
+const app = express();
+const port = 3000; // Adjust the port as needed
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static('public')); // Serve static files from the 'public' directory
 const stream = Kafka.Producer.createWriteStream({
-  'metadata.broker.list': 'localhost:9092'
+'metadata.broker.list': 'localhost:9092'
 }, {}, {
-  topic: 'test'
+topic: 'test'
 });
-
 stream.on('error', (err) => {
-  console.error('Error in our kafka stream');
-  console.error(err);
+console.error('Error in our Kafka stream');
+console.error(err);
 });
-
 function queueMessage(message) {
-  const event = { noise: message };
-  const success = stream.write(eventType.toBuffer(event));     
-  if (success) {
-    console.log(`Message queued: ${JSON.stringify(event.noise)}`);
-  } else {
-    console.log('Too many messages in the queue already..');
-  }
+const event = { noise: message };
+const success = stream.write(eventType.toBuffer(event));
+if (success) {
+console.log(`Message queued: ${JSON.stringify(event.noise)}`);
+} else {
+console.log('Too many messages in the queue already..');
 }
-
-// Function to take user input and queue the message
-function promptUser() {
-  rl.question('Enter the message to send: ', (message) => {
-    queueMessage(message);
-    rl.close();
-  });
 }
-
-// Start by prompting the user for a message
-promptUser();
+app.post('/submit', (req, res) => {
+const message = req.body.message;
+queueMessage(message);
+res.send('Message sent successfully!');
+});
+app.listen(port, () => {
+console.log(`Server is running at http://localhost:${port}`);
+});
