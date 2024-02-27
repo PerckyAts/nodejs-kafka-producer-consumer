@@ -2,15 +2,13 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import Kafka from 'node-rdkafka';
-import eventType from '../eventType.js'; // Adjust the path based on your project structure
+import { v4 as uuidv4 } from 'uuid';
 
 const app = express();
-const port = 3000; // Adjust the port as needed
+const port = 3000;
 
-app.use(bodyParser.json()); // Use JSON middleware instead of urlencoded
-app.use(express.static('public')); // Serve static files from the 'public' directory
-
-// Enable CORS for all routes
+app.use(bodyParser.json());
+app.use(express.static('public'));
 app.use(cors());
 
 const stream = Kafka.Producer.createWriteStream({
@@ -24,11 +22,16 @@ stream.on('error', (err) => {
   console.error(err);
 });
 
+function generateUniqueId() {
+  return uuidv4();
+}
+
 function queueMessage(message) {
-  const event = { noise: message };
-  const success = stream.write(eventType.toBuffer(event));     
+  const uniqueId = generateUniqueId();
+  const event = { noise: message, id: uniqueId };
+  const success = stream.write(JSON.stringify(event)); // Utiliser JSON.stringify pour envoyer l'objet en tant que chaîne JSON
   if (success) {
-    console.log(`Message queued: ${JSON.stringify(event.noise)}`);
+    console.log(`Message queued with ID ${uniqueId}: ${JSON.stringify(event.noise)}`);
   } else {
     console.log('Too many messages in the queue already..');
   }
@@ -36,7 +39,7 @@ function queueMessage(message) {
 
 app.post('/submit', (req, res) => {
   console.log('submit on message queue');
-  const message = req.body.message; // Access the message from the request body
+  const message = req.body.message;
   console.log('Message from front-end:', message);
   queueMessage(message);
   res.send('Message sent successfully!');

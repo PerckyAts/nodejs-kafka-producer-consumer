@@ -1,20 +1,9 @@
 import express from 'express';
-import avro from 'avsc';
 import http from 'http';
 import path from 'path';
 import Kafka from 'node-rdkafka';
 import cors from 'cors';
-import eventType from '../eventType.js';
 
-const schema = avro.Type.forSchema({
-  type: 'record',
-  fields: [
-    {
-      name: 'noise',
-      type: 'string',
-    }
-  ]
-});
 const app = express();
 const server = http.createServer(app);
 
@@ -26,7 +15,7 @@ const consumer = new Kafka.KafkaConsumer({
 }, {});
 
 let responseStream;
-let messagesArray = []; // Déclarer messagesArray comme variable globale pour stocker les messages
+let messagesArray = [];
 
 consumer.connect();
 
@@ -68,6 +57,34 @@ app.get('/events', (req, res) => {
 app.get('/getMessages', (req, res) => {
   res.json({ messages: messagesArray });
 });
+
+app.get('/submit', (req, res) => {
+  const message = req.query.message;
+  produceResponse({ noise: message });
+  res.send('Message sent successfully!');
+});
+
+function produceResponse(message) {
+  const producer = new Kafka.Producer({
+    'metadata.broker.list': '192.168.92.168:9092'
+  });
+
+  producer.connect();
+
+  producer.on('ready', () => {
+    producer.produce(
+      'response',
+      null,
+      Buffer.from(JSON.stringify(message)),
+      null,
+      Date.now()
+    );
+  });
+
+  producer.on('event.error', (err) => {
+    console.error('Error from producer:', err);
+  });
+}
 
 const PORT = 3001;
 server.listen(PORT, () => {

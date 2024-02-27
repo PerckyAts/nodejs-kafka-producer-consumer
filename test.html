@@ -53,7 +53,7 @@
         if (xhr.readyState === XMLHttpRequest.DONE) {
           if (xhr.status === 200) {
             // Request was successful, handle the response
-            console.log('Response:', xhr.responseText);
+            console.log('Response:', JSON.parse(responseText));
           } else {
             // Request failed
             console.error('HTTP error! Status:', xhr.status);

@@ -30,6 +30,7 @@
           if (xhr.status === 200) {
             console.log('Response:', xhr.responseText);
 
+            // Mise à jour des messages après l'envoi du formulaire
             updateMessagesContainer();
           } else {
             console.error('HTTP error! Status:', xhr.status);
@@ -52,9 +53,13 @@
             messagesContainer.innerHTML = '';
 
             var data = JSON.parse(xhr.responseText);
-
+            
             data.messages.forEach(function (message) {
+              var parsedMessage = JSON.parse(message);
+              // Afficher la valeur de "noise" dans la console
+              console.log('Noise value:', parsedMessage.noise);
               var paragraph = document.createElement('p');
+              paragraph.textContent=parsedMessage.noise;
               messagesContainer.appendChild(paragraph);
             });
           } else {
@@ -66,6 +71,10 @@
       xhr.send();
     }
 
+    // Mettre à jour les messages périodiquement (toutes les 5 secondes)
+    setInterval(updateMessagesContainer, 500);
+
+    // Mettre à jour les messages au chargement de la page
     updateMessagesContainer();
   </script>
 </body>
