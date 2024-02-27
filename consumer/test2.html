@@ -12,58 +12,61 @@
     <input type="text" id="message" name="message" required>
     <button type="button" onclick="submitForm()">Submit</button>
   </form>
-  <h2>Kafka Consumer Display</h2>
-  <ul id="messageList"></ul>
 
-  <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
-
-  <script>
-    const socket = io('http://localhost:3001');
-  
-    // Écouter l'événement de connexion côté client
-    socket.on('connect', () => {
-      console.log('Connected to the server');
-    });
-  
-    // Écouter l'événement 'message' envoyé par le serveur
-    //socket.on('message', (message) => {
-      //console.log(message);
-      //const messageList = document.getElementById('messageList');
-      //const listItem = document.createElement('li');
-      //listItem.textContent = message;
-      //messageList.appendChild(listItem);
-    //});
-  </script>
-  
+  <div id="messages-container">
+  </div>
 
   <script>
     function submitForm() {
-      // Get form data
       var message = document.getElementById('message').value;
 
-      // Create a new XMLHttpRequest object
       var xhr = new XMLHttpRequest();
 
-      // Configure it: POST-request to the /submit endpoint
       xhr.open('POST', 'http://localhost:3000/submit', true);
       xhr.setRequestHeader('Content-Type', 'application/json'); // Assuming you're sending JSON data
 
-      // Set up a callback function to handle the response
       xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
           if (xhr.status === 200) {
-            // Request was successful, handle the response
             console.log('Response:', xhr.responseText);
+
+            updateMessagesContainer();
           } else {
-            // Request failed
             console.error('HTTP error! Status:', xhr.status);
           }
         }
       };
 
-      // Convert the data to JSON and send the request
       xhr.send(JSON.stringify({ message: message }));
     }
+
+    function updateMessagesContainer() {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/getMessages', true);
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            var messagesContainer = document.getElementById('messages-container');
+
+            messagesContainer.innerHTML = '';
+
+            var data = JSON.parse(xhr.responseText);
+
+            data.messages.forEach(function (message) {
+              var paragraph = document.createElement('p');
+              messagesContainer.appendChild(paragraph);
+            });
+          } else {
+            console.error('Erreur lors de la récupération des messages:', xhr.status);
+          }
+        }
+      };
+
+      xhr.send();
+    }
+
+    updateMessagesContainer();
   </script>
 </body>
 </html>

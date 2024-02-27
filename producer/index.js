@@ -14,7 +14,7 @@ app.use(express.static('public')); // Serve static files from the 'public' direc
 app.use(cors());
 
 const stream = Kafka.Producer.createWriteStream({
-  'metadata.broker.list': 'localhost:9092'
+  'metadata.broker.list': '192.168.92.168:9092'
 }, {}, {
   topic: 'test'
 });
@@ -43,5 +43,5 @@ app.post('/submit', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+  console.log(`Server is running at http://192.168.92.168:${port}`);
 });

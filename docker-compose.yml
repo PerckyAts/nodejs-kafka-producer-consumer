@@ -11,11 +11,22 @@ services:
     container_name: 'kafka'
     ports:
       - '9092:9092'
+    expose:
+      - "9093"
+      
     environment:
       - KAFKA_BROKER_ID=1
-      - KAFKA_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
+      - KAFKA_LISTENERS= INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
+      - KAFKA_INTER_BROKER_LISTENER_NAME= INSIDE
+      - KAFKA_CREATE_TOPICS= "test"
+      - KAFKA_ADVERTISED_LISTENERS= INSIDE://kafka:9093,OUTSIDE://192.168.92.168:9092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP= INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_LOG4J_LOGGERS="kafka.controller=DEBUG,kafka.foo.bar=DEBUG"
+      - KAFKA_LOG4J_ROOT_LOGLEVEL=DEBUG
+      - KAFKA_TOOLS_LOG4J_LOGLEVEL=DEBUG
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - zookeeper
