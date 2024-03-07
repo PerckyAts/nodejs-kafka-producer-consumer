@@ -10,8 +10,8 @@ const server = http.createServer(app);
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 const consumer = new Kafka.KafkaConsumer({
-  'group.id': 'kafka',
-  'metadata.broker.list': '192.168.92.168:9092',
+  'group.id': 'kafka-percky',
+  'metadata.broker.list': 'ntx-message-queue.hive404.com:9092',
 }, {});
 
 let responseStream;
@@ -66,7 +66,7 @@ app.get('/submit', (req, res) => {
 
 function produceResponse(message) {
   const producer = new Kafka.Producer({
-    'metadata.broker.list': '192.168.92.168:9092'
+    'metadata.broker.list': 'ntx-message-queue.hive404.com:9092'
   });
 
   producer.connect();
@@ -80,6 +80,7 @@ function produceResponse(message) {
       Date.now()
     );
   });
+  
 
   producer.on('event.error', (err) => {
     console.error('Error from producer:', err);

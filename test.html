@@ -23,8 +23,8 @@
       var id = uuidv4(); // Utilisation de la fonction uuidv4 pour générer un UUID
       var xhr = new XMLHttpRequest();
   
-      //xhr.open('POST', 'http://localhost:8000/produce', true);
-      xhr.open('POST', 'https://psia-tennis-back-dev.natixgroup.com/produce', true);
+      xhr.open('POST', 'http://localhost:8000/produce', true);
+      //xhr.open('POST', 'https://psia-tennis-back-dev.natixgroup.com/produce', true);
       xhr.setRequestHeader('Content-Type', 'application/json');
   
       xhr.onreadystatechange = function () {
@@ -74,7 +74,7 @@
     }
 
     // Mettre à jour les messages périodiquement (toutes les 5 secondes)
-    setInterval(updateMessagesContainer, 500);
+    //setInterval(updateMessagesContainer, 500);
 
     // Mettre à jour les messages au chargement de la page
     updateMessagesContainer();

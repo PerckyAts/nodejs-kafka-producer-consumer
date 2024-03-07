@@ -2,7 +2,7 @@ import Kafka from 'node-rdkafka';
 
 const consumer = new Kafka.KafkaConsumer({
   'group.id': 'kafka',
-  'metadata.broker.list': '192.168.92.168:9092',
+  'metadata.broker.list': 'ntx-message-queue.hive404.com:9092',
 }, {});
 
 consumer.connect();
@@ -34,7 +34,7 @@ function substructNoise(message) {
 // Fonction pour envoyer la réponse à un topic Kafka
 function produceResponse(message) {
   const producer = new Kafka.Producer({
-    'metadata.broker.list': '192.168.92.168:9092'
+    'metadata.broker.list': 'ntx-message-queue.hive404.com:9092'
   });
 
   producer.connect();

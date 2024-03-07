@@ -34,7 +34,7 @@ app.use('/produce', authenticate);
 
 // Kafka Producer
 const producerStream = Kafka.Producer.createWriteStream({
-  'metadata.broker.list': '192.168.92.168:9092'
+  'metadata.broker.list': 'ntx-message-queue.hive404.com:9092'
 }, {}, {
   topic: 'test'
 });
@@ -46,10 +46,19 @@ producerStream.on('error', (err) => {
 
 function queueMessage(message) {
   const uniqueId = message.id;
-  const event = { noise: message.message, id: uniqueId };
+
+  const event = { first_player_name: message.first_player_name, 
+                  id: uniqueId,
+                  second_player_name:message.second_player_name,
+                  status:message.status,
+                  date: message.date,
+                  acccuracy:message.acccuracy,
+                  users_id:message.users_id,
+                  match_key:message.match_key,
+                };
   const success = producerStream.write(JSON.stringify(event));
   if (success) {
-    console.log(`Message queued with ID ${uniqueId}: ${JSON.stringify(event.noise)}`);
+    console.log(`Message queued with ID ${uniqueId}: ${JSON.stringify(event.first_player_name)} vs ${JSON.stringify(event.second_player_name)}`);
   } else {
     console.log('Too many messages in the queue already..');
   }
