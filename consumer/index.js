@@ -53,7 +53,8 @@ consumer.on('ready', () => {
   }
 
   // Send the results to the specified endpoint
-  axios.put(`http://0.0.0.0:8000/api/analize/update_analyze/${id}`, dataToUpdate)
+  
+  axios.put(`https://psia-tennis-front.dt-srv-195.ucorp.io/api/analize/update_analyze/${id}`, dataToUpdate)
     .then(response => {
       console.log(`Successfully updated analysis for ID ${id}`);
     })
