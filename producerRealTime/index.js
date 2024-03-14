@@ -48,11 +48,9 @@ function queueMessage(message) {
 //   const uniqueId = message.id;
 
   const event = { favoriteName: message.favoriteName, 
-                //   id: uniqueId,
                   signal:message.signal,
                   winnerSet:message.winnerSet,
                   idUser: message.idUser,
-                  users_id:message.users_id,
                   matchKey:message.matchKey,
                 };
   const success = producerStream.write(JSON.stringify(event));
