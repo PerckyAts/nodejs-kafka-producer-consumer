@@ -55,7 +55,7 @@ function queueMessage(message) {
                 };
   const success = producerStream.write(JSON.stringify(event));
   if (success) {
-    console.log(`Message queued with ID ${uniqueId}: ${JSON.stringify(event.favoriteName)} vs ${JSON.stringify(event.winnerSet)}`);
+    console.log(`Message ${JSON.stringify(event.favoriteName)} vs ${JSON.stringify(event.winnerSet)}`);
   } else {
     console.log('Too many messages in the queue already..');
   }
