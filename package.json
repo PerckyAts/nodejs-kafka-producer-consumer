@@ -7,7 +7,9 @@
   "scripts": {
     "start:producer": "node producer/index.js",
     "start:consumer": "node consumer/index.js",
-    "start:consumerAmazon": "node consumerAmazon/index.js"
+    "start:consumerAmazon": "node consumerAmazon/index.js",
+    "start:producerRealTime": "node producerRealTime/index.js"
+
   },
   "author": "",
   "license": "ISC",
