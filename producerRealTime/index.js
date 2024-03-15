@@ -30,7 +30,7 @@ const getRealIpAddress = (req) => {
 };
 
 // Appliquer le middleware d'authentification seulement à l'endpoint /produce
-app.use('/produce', authenticate);
+app.use('/producerealtime', authenticate);
 
 // Kafka Producer
 const producerStream = Kafka.Producer.createWriteStream({
