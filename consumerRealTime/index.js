@@ -15,9 +15,9 @@ consumer.on('ready', () => {
   try {
     const decodedMessage = JSON.parse(data.value.toString()); 
     console.log('received message:', decodedMessage);
-    const substructedMessage = substructNoise(decodedMessage);
-    produceResponse(JSON.stringify(substructedMessage));
-    console.log('returned message:', substructedMessage);
+    // const substructedMessage = substructNoise(decodedMessage);
+    // produceResponse(JSON.stringify(substructedMessage));
+    // console.log('returned message:', substructedMessage);
   } catch (error) {
     console.error('Error decoding JSON message:', error);
   }

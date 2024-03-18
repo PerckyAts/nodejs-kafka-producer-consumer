@@ -47,10 +47,12 @@ producerStream.on('error', (err) => {
 function queueMessage(message) {
 //   const uniqueId = message.id;
 
-  const event = { favoriteName: message.favoriteName, 
+  const event = { 
+                  id:message.id,
+                  favoriteName: message.favoriteName, 
                   signal:message.signal,
                   winnerSet:message.winnerSet,
-                  idUser: message.idUser,
+                  users_id: message.users_id,
                   matchKey:message.matchKey,
                 };
   const success = producerStream.write(JSON.stringify(event));
@@ -62,8 +64,8 @@ function queueMessage(message) {
 }
 
 app.post('/producerealtime', (req, res) => {
-  console.log('produce on message queue');
-  console.log("req.body", req.body);
+  // console.log('produce on message queue');
+  // console.log("req.body", req.body);
   const message = req.body;
 
   if (!message) {
