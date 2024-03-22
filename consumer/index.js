@@ -1,4 +1,3 @@
-// import express from 'express'; // Commented out because not used
 import http from 'http';
 import path from 'path';
 import Kafka from 'node-rdkafka';
@@ -11,7 +10,7 @@ const server = http.createServer(); // Removed 'app' parameter
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 const consumer = new Kafka.KafkaConsumer({
-  'group.id': 'rogella',
+  'group.id': 'consumerPreMatchAnalysis',
   'metadata.broker.list': 'ntx-message-queue.hive404.com:9092',
 }, {});
 

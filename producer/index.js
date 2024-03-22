@@ -36,7 +36,7 @@ app.use('/produce', authenticate);
 const producerStream = Kafka.Producer.createWriteStream({
   'metadata.broker.list': 'ntx-message-queue.hive404.com:9092'
 }, {}, {
-  topic: 'test'
+  topic: 'produce_prematch_prediction'
 });
 
 producerStream.on('error', (err) => {
