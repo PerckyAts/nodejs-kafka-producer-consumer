@@ -80,6 +80,8 @@ app.get('/getMatchLive', async (req, res) => {
     const apiKey = 'b7979b39a429ec061fa9ffbef7847263d7a4e5a5112453159f24f9d8aeb7c67c';
     const matchKey = req.query.matchKey; // Récupérer matchKey de la requête GET
     const apiUrl = `https://api.api-tennis.com/tennis/?method=get_livescore&match_key=${matchKey}&APIkey=${apiKey}`;
+    // const apiUrl = `https://api.api-tennis.com/tennis/?method=get_fixtures&match_key=${matchKey}&APIkey=${apiKey}`;
+
 
     try {
         const response = await fetch(apiUrl);

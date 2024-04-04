@@ -54,6 +54,9 @@ function queueMessage(message) {
                   winnerSet:message.winnerSet,
                   users_id: message.users_id,
                   matchKey:message.matchKey,
+                  set:message.set,
+                  score:message.score,
+
                 };
   const success = producerStream.write(JSON.stringify(event));
   if (success) {
