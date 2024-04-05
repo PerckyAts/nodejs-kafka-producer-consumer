@@ -40,6 +40,7 @@ async function displayEventDetails(data) {
             obj.event_type_type === "Challenger Women Singles" ||
             obj.event_type_type === "Challenger Women - Singles"
           );
+        var odds ;
         
         if (eventTypeTypeObjects.length > 0) {
             var tournamentsData = {};
@@ -48,13 +49,13 @@ async function displayEventDetails(data) {
                 var tournamentName = eventTypeTypeObject.tournament_name;
                 var eventDate = eventTypeTypeObject.event_date;
 
-                // if (!tournamentsData[tournamentName]) {
-                //     tournamentsData[tournamentName] = {};
-                // }
+                if (!tournamentsData[tournamentName]) {
+                    tournamentsData[tournamentName] = {};
+                }
 
-                // if (!tournamentsData[tournamentName][eventDate]) {
-                //     tournamentsData[tournamentName][eventDate] = [];
-                // }
+                if (!tournamentsData[tournamentName][eventDate]) {
+                    tournamentsData[tournamentName][eventDate] = [];
+                }
                 var paysfr ;
                 var flagPng = "";
                 if (extractCountryNameByTournament(tournamentName).existeNomPays === true) {
@@ -78,7 +79,7 @@ async function displayEventDetails(data) {
                 const odds = await fetchOdds(eventTypeTypeObject.event_key);
                 const oddsLive = await fetchOddsLive(eventTypeTypeObject.event_key);
                 
-                tournamentsData.push({
+                tournamentsData[tournamentName][eventDate].push({
                     odds: odds,
                     oddsLive: oddsLive,
                     eventFirstPlayer: eventTypeTypeObject.event_first_player,
@@ -95,9 +96,32 @@ async function displayEventDetails(data) {
             }
 
             for (var tournamentName in tournamentsData) {
-                console.log(tournamentName);
+
+                var tournamentDates = tournamentsData[tournamentName];
+                var hasData = false; 
+
+                for (var eventDate in tournamentDates) {
+                    var dateDataArray = tournamentDates[eventDate];
+                    if (dateDataArray.length > 0) {
+                        hasData = true;
+                        break; 
+                    }
+                }
+
+                if (hasData) { 
+              
+
+                    for (var eventDate in tournamentDates) {
+                        var dateDataArray = tournamentDates[eventDate];
+                        console.log('dateDataArray', dateDataArray);
+   
+                    }
+
+                }
             }
-        } 
+        } else {
+        }
+    } else {
     }
 }
 
