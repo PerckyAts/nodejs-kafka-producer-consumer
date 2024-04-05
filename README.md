@@ -6,6 +6,11 @@ Install  with npm
 ```bash
 npm install
 ```
+
+Run service from development environment
+```bash
+NODE_ENV=development npm run start: SERVICE_NAME
+``` 
     
 Run producer
 ```bash
@@ -33,4 +38,14 @@ npm run start:apiTennisFront
 Run service for api back call
 ```bash
 npm run start:apiTennisBack
+``` 
+## Development environemnt
+
+Run service from development environment
+```bash
+NODE_ENV=development npm run start:SERVICE_NAME
+``` 
+Example
+```bash
+NODE_ENV=development npm run start: apiTennisBack
 ``` 

@@ -1,9 +1,17 @@
 import express from 'express';
 import fetch from 'node-fetch';
 import cors from 'cors';
-
+import dotenv from 'dotenv';
 const app = express();
 const port = 3006;
+
+if (process.env.NODE_ENV) {
+    dotenv.config({path: `./.env.${process.env.NODE_ENV}`});
+} else {
+    dotenv.config();
+}
+console.log("URL :", process.env.URL);
+console.log("API KEY :", process.env.API_TENNIS_KEY);
 
 app.use(cors());
 
