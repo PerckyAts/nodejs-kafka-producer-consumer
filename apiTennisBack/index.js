@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 import cors from 'cors';
 
 const app = express();
-const port = 3005;
+const port = 3006;
 
 app.use(cors());
 
@@ -32,74 +32,111 @@ app.get('/getMatchData', async (req, res) => {
 
 
 async function displayEventDetails(data) {
-    if (data && data.result && data.result.length > 0) {
-        var eventTypeTypeObjects = data.result.filter(obj =>
-            obj.event_type_type === "Wta Singles" ||
-            obj.event_type_type === "Itf Women Singles" ||
-            obj.event_type_type === "Itf Women - Singles" ||
-            obj.event_type_type === "Challenger Women Singles" ||
-            obj.event_type_type === "Challenger Women - Singles"
-          );
-        
-        if (eventTypeTypeObjects.length > 0) {
-            var tournamentsData = {};
-
-            for (const eventTypeTypeObject of eventTypeTypeObjects) {
-                var tournamentName = eventTypeTypeObject.tournament_name;
-                var eventDate = eventTypeTypeObject.event_date;
-
-                // if (!tournamentsData[tournamentName]) {
-                //     tournamentsData[tournamentName] = {};
-                // }
-
-                // if (!tournamentsData[tournamentName][eventDate]) {
-                //     tournamentsData[tournamentName][eventDate] = [];
-                // }
-                var paysfr ;
-                var flagPng = "";
-                if (extractCountryNameByTournament(tournamentName).existeNomPays === true) {
-                    var countryFromTournament = extractCountryNameByTournament(tournamentName).nomPays;
-                    flagPng = await getCountryFlagByName(countryFromTournament);
-                    var translatedCountryName=await translateCountryName(countryFromTournament)
-                    if(translatedCountryName!=="Traduction non disponible"){
-                        titleElement.textContent=tournamentName.replace(countryFromTournament,await translateCountryName(countryFromTournament) );
-                    }
-                    
-                } else {
-                    var tournamentPlace = extractTournamentLocation(tournamentName);
-                    // console.log("ROGELLA",tournamentPlace);
-                    var countryFromTournamentLocation = await getCountryByTournamentName(tournamentPlace);
-                    flagPng = await getCountryFlagByName(countryFromTournamentLocation);
-                    // console.log("ROGELLA",flagPng);
-                    paysfr = await getCountryFlagByNamefr(countryFromTournamentLocation);
-                    // console.log("ROGELLA",paysfr);
-                }
-
-                const odds = await fetchOdds(eventTypeTypeObject.event_key);
-                const oddsLive = await fetchOddsLive(eventTypeTypeObject.event_key);
-                
-                tournamentsData.push({
-                    odds: odds,
-                    oddsLive: oddsLive,
-                    eventFirstPlayer: eventTypeTypeObject.event_first_player,
-                    eventSecondPlayer: eventTypeTypeObject.event_second_player,
-                    eventTime: eventTypeTypeObject.event_time,
-                    eventLive: eventTypeTypeObject.event_live,
-                    match_key: eventTypeTypeObject.event_key,
+	if (data && data.result && data.result.length > 0) {
+		// var eventTypeTypeObjects = data.result;
+		var eventTypeTypeObjects = data.result.filter(obj =>
+			obj.event_type_type === "Wta Singles" ||
+			obj.event_type_type === "Itf Women Singles" ||
+			obj.event_type_type === "Itf Women - Singles" ||
+			obj.event_type_type === "Challenger Women Singles" ||
+			obj.event_type_type === "Challenger Women - Singles"
+		);
+		
+		if (eventTypeTypeObjects.length > 0) {
+			var tournamentsData = [];
+			
+			for (const eventTypeTypeObject of eventTypeTypeObjects) {
+				var tournamentName = eventTypeTypeObject.tournament_name;
+				var eventDate = eventTypeTypeObject.event_date;
+				var convertedHour = eventTypeTypeObject.event_time;
+				var event_time_real = convertirHeureLocaleEnGMT(convertedHour);
+				console.log("event_time_real", event_time_real);
+				
+				var paysfr;
+				var flagPng = "";
+				if (extractCountryNameByTournament(tournamentName).existeNomPays === true) {
+					var countryFromTournament = extractCountryNameByTournament(tournamentName).nomPays;
+					flagPng = await getCountryFlagByName(countryFromTournament);
+					var translatedCountryName = await translateCountryName(countryFromTournament);
+					if (translatedCountryName !== "Traduction non disponible") {
+						titleElement.textContent = tournamentName.replace(countryFromTournament, await translateCountryName(countryFromTournament));
+					}
+				} else {
+					var tournamentPlace = extractTournamentLocation(tournamentName);
+					var countryFromTournamentLocation = await getCountryByTournamentName(tournamentPlace);
+					flagPng = await getCountryFlagByName(countryFromTournamentLocation);
+					paysfr = await getCountryFlagByNamefr(countryFromTournamentLocation);
+				}
+				
+				const odds = await fetchOdds(eventTypeTypeObject.event_key);
+				const oddsLive = await fetchOddsLive(eventTypeTypeObject.event_key);
+				console.log('flag: ', flagPng);
+				tournamentsData.push({
+					odds: odds,
+					oddsLive: oddsLive,
+					eventFirstPlayer: eventTypeTypeObject.event_first_player,
+					eventSecondPlayer: eventTypeTypeObject.event_second_player,
+					eventTime: event_time_real,
+					eventLive: eventTypeTypeObject.event_live,
+                    match_key: String(eventTypeTypeObject.event_key),					
                     event_date: eventTypeTypeObject.event_date,
-                    eventplayer_logo1: eventTypeTypeObject.event_first_player_logo,
-                    eventplayer_logo2: eventTypeTypeObject.event_second_player_logo,
-                    tournament_name: eventTypeTypeObject.tournament_name +""+"(" +paysfr+")",
-                    flagPng: flagPng
-                });
-            }
-
-            for (var tournamentName in tournamentsData) {
-                console.log(tournamentName);
-            }
-        } 
-    }
+					eventplayer_logo1: eventTypeTypeObject.event_first_player_logo ? eventTypeTypeObject.event_first_player_logo : '',
+					eventplayer_logo2: eventTypeTypeObject.event_second_player_logo ? eventTypeTypeObject.event_second_player_logo : '',
+					tournament_name: eventTypeTypeObject.tournament_name + "" + "(" + paysfr + ")",
+					flagPng: flagPng,
+				});
+			}
+			
+			for (var key in tournamentsData) {
+				if (tournamentsData.hasOwnProperty(key)) {
+					async function insertMatchData(data) {
+						try {
+							const body = JSON.stringify({
+								"odds": data.odds,
+								"odds_live": data.oddsLive,
+								"name_first_player": data.eventFirstPlayer,
+								"name_second_player": data.eventSecondPlayer,
+								"event_time": data.eventTime,
+								"event_live": data.eventLive,
+								"match_key": data.match_key,
+								"event_date": data.event_date,
+								"eventplayer_logo1": data.eventplayer_logo1,
+								"eventplayer_logo2": data.eventplayer_logo2,
+								"tournament_name": data.tournament_name,
+								"flagPng": data.flagPng,
+								"status": false,
+								"result": "",
+								"set1_joueuse1": "",
+								"set1_joueuse2": "",
+								"set2_joueuse1": "",
+								"set2_joueuse2": "",
+								"set3_joueuse1": "",
+								"set3_joueuse2": ""
+							});
+							
+							const response = await fetch(`http://0.0.0.0:8000/api/match/create_match/`, {
+								method: 'POST',
+								headers: {
+									'Content-Type': 'application/json',
+								},
+								body: body,
+							});
+							
+							console.log(body); // Afficher le contenu du body dans la console
+							const responseData = await response.json();
+						} catch (error) {
+							console.error('Une erreur s\'est produite', error);
+						}
+					}
+					
+					await insertMatchData(tournamentsData[key]);
+					// console.log(tournamentsData[key]);
+				}
+			}
+		}
+	}
 }
+
 
 
 async function fetchOdds(matchKey) {
@@ -267,6 +304,25 @@ async function translateCountryName(countryName) {
     } catch (error) {
         return "Traduction non disponible";
     }
+}
+
+function convertirHeureLocaleEnGMT(heure) {
+    const [heures, minutes] = heure.split(':').map(Number);
+    const dateHeure = new Date();
+    dateHeure.setHours(heures, minutes, 0);
+    dateHeure.setHours(dateHeure.getHours() - 1 +  (getDecalageHoraireGMT()));//2
+    const nouvellesHeures = dateHeure.getHours();
+    const nouvellesMinutes = dateHeure.getMinutes();
+    const heureSoustraite = `${nouvellesHeures.toString().padStart(2, '0')}:${nouvellesMinutes.toString().padStart(2, '0')}`;
+    return heureSoustraite;
+}
+
+function getDecalageHoraireGMT() {
+    var decalageMinutes = new Date().getTimezoneOffset();
+
+    var decalageHeures = (decalageMinutes / 60) * (-1);
+
+    return decalageHeures;
 }
 
 app.listen(port, () => {

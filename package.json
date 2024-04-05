@@ -10,7 +10,9 @@
     "start:consumerAmazon": "node consumerAmazon/index.js",
     "start:producerRealTime": "node producerRealTime/index.js",
     "start:consumerRealTime": "node consumerRealTime/index.js",
-    "start:apiTennis": "node apiTennis/index.js"
+    "start:apiTennisFront": "node apiTennisFront/index.js",
+    "start:apiTennisBack": "node apiTennisBack/index.js"
+
   },
   "author": "",
   "license": "ISC",

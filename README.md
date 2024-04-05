@@ -4,7 +4,7 @@
 Install  with npm
 
 ```bash
-npm Install
+npm install
 ```
     
 Run producer
@@ -26,7 +26,11 @@ Run consumer for real time analysis
 ```bash
 npm run start:consumerRealTime
 ``` 
-Run service for api call
+Run service for api front call
 ```bash
-npm run start:apiTennis
+npm run start:apiTennisFront
+``` 
+Run service for api back call
+```bash
+npm run start:apiTennisBack
 ``` 
