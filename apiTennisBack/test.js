@@ -8,7 +8,7 @@ const port = 3005;
 app.use(cors());
 
 app.get('/getMatchData', async (req, res) => {
-    const apiKey = 'b7979b39a429ec061fa9ffbef7847263d7a4e5a5112453159f24f9d8aeb7c67c';
+    const apiKey = 'API_TENNIS_KEY';
     
     const today = new Date();
     const afterTomorrow = new Date();
@@ -127,7 +127,7 @@ async function displayEventDetails(data) {
 
 
 async function fetchOdds(matchKey) {
-    const apiKey = 'b7979b39a429ec061fa9ffbef7847263d7a4e5a5112453159f24f9d8aeb7c67c';
+    const apiKey = 'API_TENNIS_KEY';
     const oddsApiUrl = `https://api.api-tennis.com/tennis/?method=get_odds&APIkey=${apiKey}&match_key=${matchKey}`;
 
     try {
@@ -158,7 +158,7 @@ async function fetchOdds(matchKey) {
 }
 
 async function fetchOddsLive(matchKey) {
-    const apiKey = 'b7979b39a429ec061fa9ffbef7847263d7a4e5a5112453159f24f9d8aeb7c67c';
+    const apiKey = 'API_TENNIS_KEY';
     const oddsLiveApiUrl = `https://api.api-tennis.com/tennis/?method=get_odds&APIkey=${apiKey}&match_key=${matchKey}`;
 
     try {

@@ -48,7 +48,7 @@
 //   if (responseStream) {
 //     responseStream.write(`data: ${message}\n\n`);
 //   }
-//   axios.put(`http://0.0.0.0:8000/api/protoRealTimeAnalysis/update_protoRealTimeAnalysis/${id}`, dataToUpdate)//endpoint local
+//   axios.put(`${urlPython}api/protoRealTimeAnalysis/update_protoRealTimeAnalysis/${id}`, dataToUpdate)//endpoint local
 //   .then(response => {
 //     console.log(`Successfully updated analysis for ID ${id}`);
 //   })
@@ -75,6 +75,20 @@ import http from 'http';
 import path from 'path';
 import Kafka from 'node-rdkafka';
 import axios from 'axios'; // Import axios
+import express from 'express';
+
+import dotenv from 'dotenv';
+const app = express();
+const port = 3006;
+
+if (process.env.NODE_ENV) {
+    dotenv.config({path: `./.env.${process.env.NODE_ENV}`});
+} else {
+    dotenv.config();
+}
+let apiTennisKey=process.env.API_TENNIS_KEY;
+let urlPython=process.env.URL;
+let apiGeonamesKey=process.env.API_GEONAMES_KEY;
 
 // // Removed the unused express variable
 
@@ -127,7 +141,7 @@ consumer.on('ready', () => {
   // Send the results to the specified endpoint
   
   // axios.put(`https://psia-tennis-front.dt-srv-195.ucorp.io/api/protoRealTimeAnalysis/update_protoRealTimeAnalysis/${id}`, dataToUpdate)//endpint prod
-  axios.put(`http://0.0.0.0:8000/api/protoRealTimeAnalysis/update_protoRealTimeAnalysis/${id}`, dataToUpdate)//endpoint local
+  axios.put(`${urlPython}api/protoRealTimeAnalysis/update_protoRealTimeAnalysis/${id}`, dataToUpdate)//endpoint local
     .then(response => {
       console.log(`Successfully updated analysis for ID ${id}`);
     })

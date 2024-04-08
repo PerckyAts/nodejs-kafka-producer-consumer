@@ -1,9 +1,18 @@
 import http from 'http';
 import path from 'path';
 import Kafka from 'node-rdkafka';
-import axios from 'axios'; // Import axios
+import axios from 'axios'; 
+import express from 'express';
+import dotenv from 'dotenv';
+const app = express();
+const port = 3006;
 
-// Removed the unused express variable
+if (process.env.NODE_ENV) {
+    dotenv.config({path: `./.env.${process.env.NODE_ENV}`});
+} else {
+    dotenv.config();
+}
+let urlPython=process.env.URL;
 
 const server = http.createServer(); // Removed 'app' parameter
 
@@ -54,7 +63,8 @@ consumer.on('ready', () => {
   // Send the results to the specified endpoint
   
   // axios.put(`https://psia-tennis-front.dt-srv-195.ucorp.io/api/analize/update_analyze/${id}`, dataToUpdate)//endpint prod
-  axios.put(`http://0.0.0.0:8000/api/analize/update_analyze/${id}`, dataToUpdate)//endpoint local
+  // axios.put(`http://0.0.0.0:8000/api/analize/update_analyze/${id}`, dataToUpdate)//endpoint local
+  axios.put(`${urlPython}api/analize/update_analyze/${id}`, dataToUpdate)//endpoint local
     .then(response => {
       console.log(`Successfully updated analysis for ID ${id}`);
     })

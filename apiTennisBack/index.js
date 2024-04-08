@@ -10,13 +10,15 @@ if (process.env.NODE_ENV) {
 } else {
     dotenv.config();
 }
-console.log("URL :", process.env.URL);
-console.log("API KEY :", process.env.API_TENNIS_KEY);
+let apiTennisKey=process.env.API_TENNIS_KEY;
+let urlPython=process.env.URL;
+let apiGeonamesKey=process.env.API_GEONAMES_KEY;
+// console.log("URL :", process.env.URL);
+// console.log("API KEY :", process.env.API_TENNIS_KEY);
 
 app.use(cors());
 
 app.get('/getMatchData', async (req, res) => {
-    const apiKey = 'b7979b39a429ec061fa9ffbef7847263d7a4e5a5112453159f24f9d8aeb7c67c';
     
     const today = new Date();
     const afterTomorrow = new Date();
@@ -25,7 +27,7 @@ app.get('/getMatchData', async (req, res) => {
     const formattedAfterTomorrow = afterTomorrow.toISOString().split('T')[0];
 
     try {
-        const response = await fetch(`https://api.api-tennis.com/tennis/?method=get_fixtures&APIkey=${apiKey}&date_start=${formattedToday}&date_stop=${formattedAfterTomorrow}`);
+        const response = await fetch(`https://api.api-tennis.com/tennis/?method=get_fixtures&apiTennisKey=${apiTennisKey}&date_start=${formattedToday}&date_stop=${formattedAfterTomorrow}`);
         const data = await response.json();
         var dataProcessed=await displayEventDetails(data);
         res.json(dataProcessed);
@@ -122,7 +124,7 @@ async function displayEventDetails(data) {
 								"set3_joueuse2": ""
 							});
 							
-							const response = await fetch(`http://0.0.0.0:8000/api/match/create_match/`, {
+							const response = await fetch(`${urlPython}api/match/create_match/`, {
 								method: 'POST',
 								headers: {
 									'Content-Type': 'application/json',
@@ -148,8 +150,7 @@ async function displayEventDetails(data) {
 
 
 async function fetchOdds(matchKey) {
-    const apiKey = 'b7979b39a429ec061fa9ffbef7847263d7a4e5a5112453159f24f9d8aeb7c67c';
-    const oddsApiUrl = `https://api.api-tennis.com/tennis/?method=get_odds&APIkey=${apiKey}&match_key=${matchKey}`;
+    const oddsApiUrl = `https://api.api-tennis.com/tennis/?method=get_odds&apiTennisKey=${apiTennisKey}&match_key=${matchKey}`;
 
     try {
         const response = await fetch(oddsApiUrl);
@@ -179,8 +180,7 @@ async function fetchOdds(matchKey) {
 }
 
 async function fetchOddsLive(matchKey) {
-    const apiKey = 'b7979b39a429ec061fa9ffbef7847263d7a4e5a5112453159f24f9d8aeb7c67c';
-    const oddsLiveApiUrl = `https://api.api-tennis.com/tennis/?method=get_odds&APIkey=${apiKey}&match_key=${matchKey}`;
+    const oddsLiveApiUrl = `https://api.api-tennis.com/tennis/?method=get_odds&apiTennisKey=${apiTennisKey}&match_key=${matchKey}`;
 
     try {
         const response = await fetch(oddsLiveApiUrl);
@@ -258,7 +258,6 @@ async function getCountryFlagByNamefr(countryName) {
 }
 /*ENDGET COUNTRY FR */
 async function getCountryByTournamentName(tournamentPlace) {
-    const apiGeonamesKey = "percky";
     const getFlagUrl = `https://secure.geonames.org/searchJSON?q=${encodeURIComponent(tournamentPlace)}&maxRows=1&username=${apiGeonamesKey}`;
     try {
         const response = await fetch(getFlagUrl);
