@@ -14,7 +14,7 @@ let apiTennisKey=process.env.API_TENNIS_KEY;
 let urlPython=process.env.URL;
 let apiGeonamesKey=process.env.API_GEONAMES_KEY;
 // console.log("URL :", process.env.URL);
-// console.log("API KEY :", process.env.API_TENNIS_KEY);
+console.log("API KEY :", process.env.API_TENNIS_KEY);
 
 app.use(cors());
 
@@ -27,7 +27,8 @@ app.get('/getMatchData', async (req, res) => {
     const formattedAfterTomorrow = afterTomorrow.toISOString().split('T')[0];
 
     try {
-        const response = await fetch(`https://api.api-tennis.com/tennis/?method=get_fixtures&apiTennisKey=${apiTennisKey}&date_start=${formattedToday}&date_stop=${formattedAfterTomorrow}`);
+        console.log("API KEY :", apiTennisKey);
+        const response = await fetch(`https://api.api-tennis.com/tennis/?method=get_fixtures&APIkey=${apiTennisKey}&date_start=${formattedToday}&date_stop=${formattedAfterTomorrow}`);
         const data = await response.json();
         var dataProcessed=await displayEventDetails(data);
         res.json(dataProcessed);
@@ -68,9 +69,7 @@ async function displayEventDetails(data) {
 					var countryFromTournament = extractCountryNameByTournament(tournamentName).nomPays;
 					flagPng = await getCountryFlagByName(countryFromTournament);
 					var translatedCountryName = await translateCountryName(countryFromTournament);
-					if (translatedCountryName !== "Traduction non disponible") {
-						titleElement.textContent = tournamentName.replace(countryFromTournament, await translateCountryName(countryFromTournament));
-					}
+					
 				} else {
 					var tournamentPlace = extractTournamentLocation(tournamentName);
 					var countryFromTournamentLocation = await getCountryByTournamentName(tournamentPlace);
@@ -138,8 +137,28 @@ async function displayEventDetails(data) {
 							console.error('Une erreur s\'est produite', error);
 						}
 					}
-					
-					await insertMatchData(tournamentsData[key]);
+
+                    async function verifyMatchData(data) {
+                        try {
+                            const response = await fetch(`${urlPython}api/match/get_match/?match_key=${data.match_key}`, {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                            });
+                            const responseData = await response.json();
+                            console.log(responseData); // Afficher les résultats du fetch
+                        } catch (error) {
+                            console.error('Une erreur s\'est produite', error);
+                        }
+                    }
+                    let matchExist=await verifyMatchData(tournamentsData[key]);
+                    if (matchExist !==null) {
+                        await insertMatchData(tournamentsData[key]);
+                    }
+                    else{
+                        console.log(`le match ayant comme id: ${tournamentsData[key].match_key} existe`);
+                    }
 					// console.log(tournamentsData[key]);
 				}
 			}
@@ -150,7 +169,7 @@ async function displayEventDetails(data) {
 
 
 async function fetchOdds(matchKey) {
-    const oddsApiUrl = `https://api.api-tennis.com/tennis/?method=get_odds&apiTennisKey=${apiTennisKey}&match_key=${matchKey}`;
+    const oddsApiUrl = `https://api.api-tennis.com/tennis/?method=get_odds&APIkey=${apiTennisKey}&match_key=${matchKey}`;
 
     try {
         const response = await fetch(oddsApiUrl);
@@ -180,7 +199,7 @@ async function fetchOdds(matchKey) {
 }
 
 async function fetchOddsLive(matchKey) {
-    const oddsLiveApiUrl = `https://api.api-tennis.com/tennis/?method=get_odds&apiTennisKey=${apiTennisKey}&match_key=${matchKey}`;
+    const oddsLiveApiUrl = `https://api.api-tennis.com/tennis/?method=get_odds&APIkey=${apiTennisKey}&match_key=${matchKey}`;
 
     try {
         const response = await fetch(oddsLiveApiUrl);
