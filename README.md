@@ -43,9 +43,9 @@ npm run start:apiTennisBack
 
 Run service from development environment
 ```bash
-NODE_ENV=development npm run start:SERVICE_NAME
+NODE_ENV=dev npm run start:SERVICE_NAME
 ``` 
 Example
 ```bash
-NODE_ENV=development npm run start: apiTennisBack
+NODE_ENV=dev npm run start: apiTennisBack
 ``` 
